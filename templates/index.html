@@ -1,0 +1,156 @@
+<!-- ==============================================================================
+     Layer: Frontend View Layer (HTML Template)
+     Description: Semantic HTML5 structure for the single-page To-Do application.
+                  Rendered by Flask, interacts with REST API via static/script.js,
+                  and styled with modern, responsive CSS via static/style.css.
+============================================================================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow &bull; Modern To-Do List</title>
+    <meta name="description" content="A clean, responsive To-Do List web app built with Flask, SQLite, and Vanilla JS.">
+
+    <!-- Google Fonts for modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Application CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-background-glow glow-1"></div>
+    <div class="app-background-glow glow-2"></div>
+
+    <main class="app-container">
+        <!-- Application Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 11l3 3L22 4"></path>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="app-title">TaskFlow</h1>
+                    <p class="app-subtitle" id="currentDateDisplay">Organize your priorities seamlessly</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Progress & Counter Card -->
+        <section class="card progress-card" aria-label="Task progress summary">
+            <div class="progress-header">
+                <div>
+                    <span class="progress-label">Task Completion</span>
+                    <!-- Feature 5: Dynamic Counter -->
+                    <h2 class="counter-text" id="taskCounter">0 of 0 tasks done</h2>
+                </div>
+                <div class="progress-percentage-badge" id="progressPercentage">0%</div>
+            </div>
+            <!-- Progress Bar Visualization -->
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
+            </div>
+        </section>
+
+        <!-- Feature 2: Add New Task Form -->
+        <section class="card form-card">
+            <form id="addTaskForm" class="task-form" autocomplete="off">
+                <div class="form-inputs">
+                    <!-- Task Title Input -->
+                    <div class="input-wrapper title-wrapper">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <input 
+                            type="text" 
+                            id="taskTitleInput" 
+                            name="title" 
+                            class="text-input" 
+                            placeholder="What needs to be done?" 
+                            maxlength="200" 
+                            required 
+                            autofocus
+                        >
+                    </div>
+
+                    <!-- Stretch Goal: Due Date Input -->
+                    <div class="input-wrapper date-wrapper" title="Optional Due Date">
+                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <input 
+                            type="date" 
+                            id="taskDueDateInput" 
+                            name="due_date" 
+                            class="date-input"
+                            aria-label="Due date (optional)"
+                        >
+                    </div>
+                </div>
+
+                <!-- Add Button -->
+                <button type="submit" id="addTaskBtn" class="btn btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>Add Task</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- Stretch Goal: Filter Controls & Task List Card -->
+        <section class="card list-card">
+            <div class="list-controls-bar">
+                <!-- Filter Tabs: All / Active / Done -->
+                <div class="filter-group" role="tablist" aria-label="Task status filters">
+                    <button type="button" class="filter-tab active" data-filter="all" id="filterAll" role="tab" aria-selected="true">
+                        <span>All</span>
+                        <span class="filter-badge" id="badgeAll">0</span>
+                    </button>
+                    <button type="button" class="filter-tab" data-filter="active" id="filterActive" role="tab" aria-selected="false">
+                        <span>Active</span>
+                        <span class="filter-badge" id="badgeActive">0</span>
+                    </button>
+                    <button type="button" class="filter-tab" data-filter="done" id="filterDone" role="tab" aria-selected="false">
+                        <span>Done</span>
+                        <span class="filter-badge" id="badgeDone">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Feature 1: Show all tasks in a list -->
+            <ul id="taskList" class="task-list" aria-live="polite">
+                <!-- Rendered dynamically by static/script.js -->
+            </ul>
+
+            <!-- Empty State Display -->
+            <div id="emptyState" class="empty-state hidden">
+                <div class="empty-state-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M8 12h8"></path>
+                    </svg>
+                </div>
+                <h3 class="empty-state-title" id="emptyStateTitle">No tasks found</h3>
+                <p class="empty-state-desc" id="emptyStateDesc">Add a new task above to get started!</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container" aria-live="assertive"></div>
+
+    <!-- Application JavaScript -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
